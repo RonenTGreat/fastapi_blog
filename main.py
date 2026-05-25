@@ -44,7 +44,9 @@ app.include_router(posts.router, prefix="/api/posts", tags=["posts"])
 @app.get("/posts", include_in_schema=False, name="posts")
 async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(
-        select(models.Post).options(selectinload(models.Post.author)),
+        select(models.Post)
+        .options(selectinload(models.Post.author))
+        .order_by(models.Post.date_posted.desc()),
     )
     posts = result.scalars().all()
     return templates.TemplateResponse(
@@ -63,7 +65,8 @@ async def post_page(
     result = await db.execute(
         select(models.Post)
         .options(selectinload(models.Post.author))
-        .where(models.Post.id == post_id),
+        .where(models.Post.id == post_id)
+        .order_by(models.Post.date_posted.desc()),
     )
     post = result.scalars().first()
     if post:
@@ -100,6 +103,7 @@ async def user_posts_page(
         "user_posts.html",
         {"posts": posts, "user": user, "title": f"{user.username}'s Posts"},
     )
+
 
 @app.exception_handler(StarletteHTTPException)
 async def general_http_exception_handler(
