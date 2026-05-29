@@ -10,3 +10,4 @@ wheels/
 .venv
 .env
 blog.db
+populate_images
