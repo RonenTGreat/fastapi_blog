@@ -11,3 +11,4 @@ wheels/
 .env
 blog.db
 populate_images
+media/profile_pics
