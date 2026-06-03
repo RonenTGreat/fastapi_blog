@@ -1,4 +1,5 @@
 import asyncio
+import selectors
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -289,10 +290,6 @@ async def populate() -> None:
         transport=transport,
         base_url="http://localhost",
     ) as client:
-        # Ensure tables exist
-        from database import Base, engine
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
         # Clear existing data (local images first, then database)
         await clear_existing_data()
 
@@ -385,4 +382,6 @@ async def populate() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(populate())
+    selector = selectors.SelectSelector()
+    loop_factory = lambda: asyncio.SelectorEventLoop(selector)
+    asyncio.run(populate(), loop_factory=loop_factory)
