@@ -1,6 +1,10 @@
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+import os
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
